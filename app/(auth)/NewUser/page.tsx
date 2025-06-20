@@ -1,11 +1,18 @@
-import { View, Text, TouchableOpacity, ScrollView } from 'react-native'
+import { View, Text, TouchableOpacity, ScrollView, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, Platform } from 'react-native'
 import { AntDesign } from '@expo/vector-icons'
 import Input from 'components/utils/Input'
 import PupBtn from 'components/utils/PupBtn'
 import { useRouter } from 'expo-router'
+import { useState } from 'react'
 
 const NewClientLogin = () => {
     const router = useRouter()
+    const [userDetails, setUserDetails] = useState({
+        name: '',
+        email: '',
+        password: '',
+        confirmPassword: ''
+    })
   return (
         <ScrollView>
     <View className='flex flex-1 relative mb-12'>
@@ -21,10 +28,16 @@ const NewClientLogin = () => {
     <View className='w-full h-5/6 flex justify-start py-8 items-start px-6 gap-4'>
     <Text className='font-pop-medium text-3xl text-white'>We would love to connect with you!</Text>
     <Text className='font-pop-light text-base mb-6 text-pup-100'>Your information stays secure with us.</Text>
-    <Input placeholder='Your Name'/>
-    <Input placeholder='Your Email Address'/>
-    <Input placeholder='Your Password'/>
-    <Input placeholder='Confirm Your Password'/>
+    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()} className='w-full'>
+        <KeyboardAvoidingView className='w-full' behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 240}>
+    <ScrollView className='w-full' style={{ flexGrow: 0 }}>
+    <Input value={userDetails.name} setValue={(text) => setUserDetails({...userDetails, name: text as string})} placeholder='Your Name'/>
+    <Input value={userDetails.email} setValue={(text) => setUserDetails({...userDetails, email: text as string})} placeholder='Your Email Address'/>
+    <Input value={userDetails.password} setValue={(text) => setUserDetails({...userDetails, password: text as string})} placeholder='Your Password'/>
+    <Input value={userDetails.confirmPassword} setValue={(text) => setUserDetails({...userDetails, confirmPassword: text as string})} placeholder='Confirm Your Password'/>
+    </ScrollView>
+        </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
     <TouchableOpacity className='w-full'>
         <Text className='w-full text-right text-pup-100 font-dm-light'>Forget Password?</Text>
     </TouchableOpacity>

@@ -1,8 +1,10 @@
 import ChatBubble from 'components/elements/ChatBubble';
 import GradBox from 'components/elements/GradBox';
-import { ScrollView, Text, View } from 'react-native';
+import { useAuth } from 'context/AuthContext';
+import { Pressable, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 export default function Main() {
+  const {logout} = useAuth() as any;
   return (
     <View style={{ flex: 1 }}>
       <ScrollView>
@@ -11,7 +13,6 @@ export default function Main() {
           <Text className="py-2 font-pop-semibold text-3xl tracking-[-1px] text-white">
             All Chats
           </Text>
-
           <ChatBubble />
           <ChatBubble />
         </View>

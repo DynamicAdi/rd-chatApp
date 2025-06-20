@@ -17,7 +17,9 @@ export default function Layout() {
             contentStyle: { backgroundColor: '#090015' },
             headerShown: false,
           }}>
-          <Stack.Screen name="(tabs)/main/page" />
+          <Stack.Screen name="main/page" />
+          <Stack.Screen name="profile/page" />
+          <Stack.Screen name="announcements/page" />
         </Stack>
       </SafeAreaView>
     </SafeAreaProvider>
