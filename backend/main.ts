@@ -4,24 +4,34 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const app = express()
+const app = express();
 
-const origin = [
-    '*'
-]
+const allowedOrigins = process.env.NODE_ENV === 'production'
+  ? ['https://your-production-domain.com']
+  : ['http://localhost:3000'];
+
 app.use(cors({
-    origin
-}))
+  origin: allowedOrigins,
+  credentials: true
+}));
+
 app.use(express.json());
 
-app.get('/', (req, res) => {
-    res.send('Hello World!');
+app.get('/', (_req, res) => {
+  res.status(200).send('API is working!');
+});
+
+app.get('/health', (_req, res) => {
+  res.status(200).json({ status: 'UP' });
 });
 
 
+app.use((_req, res) => {
+  res.status(404).json({ error: 'Route not found' });
+});
 
 
-
-app.listen(process.env.PORT || 3000, () => {
-    console.log(`Server is running on port ${process.env.PORT || 3000}`);
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
 });
