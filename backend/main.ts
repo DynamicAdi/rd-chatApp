@@ -7,14 +7,17 @@ import userRoute from "./routes/user.routes.js"
 
 dotenv.config();
 
-const app = express()
+const app = express();
 
-const origin = [
-    '*'
-]
+const allowedOrigins = process.env.NODE_ENV === 'production'
+  ? ['https://your-production-domain.com']
+  : ['http://localhost:3000'];
+
 app.use(cors({
-    origin
-}))
+  origin: allowedOrigins,
+  credentials: true
+}));
+
 app.use(express.json());
 
 app.use("/api/users", userRoute);
