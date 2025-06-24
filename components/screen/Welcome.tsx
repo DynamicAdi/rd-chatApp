@@ -46,7 +46,7 @@ const Welcome = () => {
           Evaluate Your Experience with {'\n'}
           <Text className="font-grotesk-bold text-6xl uppercase">the rd group of industries</Text>
         </Text>
-        <PupBtn onPress={() => router.push('auth/clientLogin/page')} title='Get Started' Icon={AntDesign} IconName='arrowright' />
+        <PupBtn onPress={() => router.push('(auth)/clientLogin/page')} title='Get Started' Icon={AntDesign} IconName='arrowright' />
       </View>
     </View>
   );

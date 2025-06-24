@@ -8,7 +8,7 @@ export const getAllUsers = async (req: Request, res: Response) => {
     const users = await userModel.allUsers();
     res.status(200).json(users);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch users' });
+    res.status(500).json({ error: 'Failed to fetch users', err: error });
   }
 };
 
@@ -40,7 +40,7 @@ export const updateUser = async (req: Request, res: Response) => {
     await userModel.updateUser(id, req.body);
     res.status(200).json({ "message": "success" });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to update user' });
+    res.status(500).json({ error: 'Failed to update user', err: error });
   }
 };
 
@@ -85,7 +85,7 @@ export const checkToken = async (req: Request, res: Response) => {
     const token = authHeader.split(' ')[1];
     try {
     const user = jwt.verify(token, SECRET_KEY);
-    res.json({ msg: 'Protected route accessed', user });
+    res.json(user);
     } catch (e) {
     res.status(403).json({ error: 'Invalid token' });
     }

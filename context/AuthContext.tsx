@@ -1,9 +1,10 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router'
+import axios from "axios";
+import { API_URL } from 'context/env'
 
 export const AuthContext = createContext({});
-
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -12,12 +13,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter()
 
   const login = async (email: string, password: string) => {
-    
     setIsLoading(true);
-    await AsyncStorage.setItem("userToken", "igiegngan");
-    setUser("igiegngan");
-    setIsLoading(false);
-    router.replace("/(tabs)/main/page");
+    try {
+      const apiCall = await axios.post(`${API_URL}/api/users/login`, {
+        email: email.toLowerCase(),
+        password: password
+      })
+      if (apiCall.status===200) {
+        await AsyncStorage.setItem("userToken", apiCall.data.token);
+        setUser(apiCall.data.token);
+        router.replace("/(tabs)/main/page");
+      }
+    }
+    catch (error) {
+      alert(`It's not you, Its us!\n Error - ${error}`)
+    }
   };
 
   const logout = async () => {

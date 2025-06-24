@@ -1,9 +1,9 @@
 import { Text, TouchableOpacity } from 'react-native'
 import PupGrad from './PupGrad'
-import { AntDesign } from '@expo/vector-icons'
+
 
 const PupBtn = ({title, Icon, IconName, IconSize=24, onPress, className }: {
-    title: string,
+    title?: string,
     Icon?: any,
     IconName?: string,
     IconSize?: number,
@@ -14,7 +14,10 @@ const PupBtn = ({title, Icon, IconName, IconSize=24, onPress, className }: {
   return (
         <PupGrad className={className}>
           <TouchableOpacity onPress={onPress} className="flex w-full flex-row items-center justify-center py-4">
-            <Text className="w-fit pr-1 font-grotesk-medium text-2xl text-white">{title}</Text>
+            {
+                title &&
+                <Text className="w-fit pr-1 font-grotesk-medium text-2xl text-white">{title}</Text>
+            }
             {
                 Icon &&
                 <Icon name={IconName} size={IconSize} color="white" />

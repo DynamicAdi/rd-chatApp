@@ -16,6 +16,8 @@ export default function Main() {
           <ChatBubble />
           <ChatBubble />
         </View>
+      
+      {/* <Navbar /> */}
       </ScrollView>
     </View>
   );

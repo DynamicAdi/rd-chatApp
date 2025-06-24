@@ -6,6 +6,11 @@
     "moduleDetection": "force",
     "esModuleInterop": true,
     "resolveJsonModule": true,
-    "strict": true
+    "strict": true,
+    "outDir": "dist",         
+    "rootDir": ".",            
+    "sourceMap": false
+  },
+  "include": ["**/*.ts"],
+  "exclude": ["dist", "node_modules"]
   }
-}

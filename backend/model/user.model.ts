@@ -13,7 +13,7 @@ export const createUser = async (data: any, type: boolean = false) => {
         name: data.name,
         email: data.email,
         password: hashed,
-        role: type ? "Employee" : "User",
+        role: type ? "Employee" : "Client",
         },
     });
 }
@@ -21,20 +21,26 @@ export const createUser = async (data: any, type: boolean = false) => {
 
 
 export const updateUser = async (id: string, data: any) => {
+  const user =  await db.user.findUnique({where: {id}})
+  
   const hashed = await bcrypt.hash(data.password, 10);
+
+
+
   await db.user.update({
     where: { id: id },
     data: {
-      name: data.name,
-      email: data.email,
-      role: data.role,
-      password: hashed,
-      employeeId: data.employeeId || null,
-      department: data.department || null,
-      bio: data.bio || null,
-      dob: data.dob || null,
-      phone: data.phone || null,
-      image: data.imageUrl || null,
+      name: data.name || user?.name,
+      email: data.email || user?.email,
+      password: hashed || user?.password,
+      role: data.role || user?.role,
+      workingAs: data.workingAs || user?.workingAs || null,
+      employeeId: data.employeeId || user?.employeeId || null,
+      department: data.department || user?.department || null,
+      bio: data.bio || user?.bio || null,
+      dob: data.dob || user?.dob || null,
+      phone: data.phone || user?.phone || null,
+      image: data.imageUrl || user?.image || null,
     },
   });
 };
