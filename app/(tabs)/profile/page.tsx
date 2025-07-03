@@ -12,6 +12,8 @@ type roleType = 'Employee' | 'Client' | 'Admin';
 
 const page = () => {
   const [isLoading, setLoading] = useState(true);
+  const [updating, setUpdating] = useState(false);
+  const [updated, setUpdated] = useState(false)
   const [role, setRole] = useState<roleType>();
   const [data, setData] = useState<Employee>();
   const { user } = useAuth() as any;
@@ -34,14 +36,50 @@ const page = () => {
     }
   };
 
+  const [input, setInput] = useState("")
+
+  
+  const handleSubmit = async (title?: string) => {
+    let key = title?.toLowerCase()
+    try {
+      setUpdating(true)
+      // setLoading(true)
+      const res = await axios.post(
+        `${API_URL}/api/users/update-via-app`,
+        {
+          [key as string]: input,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `${user}`,
+          },
+        }
+      );
+      if (res.status === 200) {
+        setUpdating(false)
+        setUpdated(!updated)
+      }
+    }
+    catch (error) {
+      console.log(error)
+    }
+    finally {
+    }
+  }
+  
   useEffect(() => {
     getProfile();
-  }, []);
+  }, [updated]);
 
   if (isLoading) {
     return <Loader title="Gettig Your Information" />;
   }
   return role === 'Client' ? <ClientProfile /> : <EmployeeProfile 
+  handleSubmit={handleSubmit}
+  input={input}
+  setInput={setInput}
+  updating={updating}
   data={data as Employee}
   />;
 };

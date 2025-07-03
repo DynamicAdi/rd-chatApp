@@ -1,6 +1,10 @@
-import { Image, Text, TouchableOpacity, View } from 'react-native'
-import React from 'react'
-import { SimpleLineIcons } from '@expo/vector-icons'
+import { Image, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import React, { useState } from 'react'
+import { AntDesign, SimpleLineIcons } from '@expo/vector-icons'
+import PopUp from 'components/elements/PopUp';
+import axios from 'axios';
+import { API_URL } from 'context/env';
+import { useAuth } from 'context/AuthContext';
 export interface Employee {
   id: string;
   name: string;
@@ -16,10 +20,30 @@ export interface Employee {
   phone: string | null;
 }
 
-const EmployeeProfile = ({data}: {data: Employee}) => {
+const EmployeeProfile = ({data, handleSubmit, setInput, input, updating}: {data: Employee, handleSubmit: (title: string) => void, setInput: any, input: string, updating: boolean}) => {
 
+  const [isPopUp, setPopUp] = useState(false)
+  const [title, setTitle] = useState("")
+  const [pass, setPass] = useState(false);
+
+  const handleClick = (val: string) => {
+    const value = val.toLowerCase()
+    const userData = data[value] ? data[value] : "" 
+    setTitle(val)
+    setInput(userData)
+    setPopUp(true)
+  }
+  const close = () => setPopUp(!isPopUp)
   return (
     <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}} className='relative'>
+      {
+        isPopUp &&
+       <PopUp input={input} title={title} clickAction={() => handleSubmit(title)} setInput={setInput} close={close} loading={updating}/>
+      }
+      {
+        pass &&
+        <ChangePass close={() => setPass(!pass)}/>
+      }
       <View className='w-full h-16 rotate-45 absolute z-50 inset-0 top-6 bg-pup-dark rounded-br-full -left-32 flex justify-center items-center'><Text className='text-pup-100 text-center font-grotesk-medium text-xl'>The RD group of industries</Text></View>
       <View className='w-full h-16 -rotate-45 absolute -z-50 inset-0 top-6 bg-pup-dark rounded-br-full left-32 flex justify-center items-center'><Text className='text-pup-100 text-center font-grotesk-medium text-xl'>The RD group of industries</Text></View>
     
@@ -51,7 +75,7 @@ const EmployeeProfile = ({data}: {data: Employee}) => {
             <View className='mt-2 px-4'>
             <Text className='font-dm-semibold text-lg text-gray-600 mb-2'>Bio - <Text className='font-dm-light text-sm tracking-tighter leading-none'>{data?.bio}</Text>
             {"  "}
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => handleClick("Bio")}>
             <SimpleLineIcons name="pencil" size={12} color="#8671FF" />
             </TouchableOpacity>
             </Text> 
@@ -59,19 +83,19 @@ const EmployeeProfile = ({data}: {data: Employee}) => {
             <Text className='font-dm-semibold my-1 text-lg text-gray-600'>DOB - <Text className='font-dm-regular text-base tracking-tighter leading-none'>{data?.dob}</Text></Text>
             <Text className='font-dm-semibold my-1 text-lg text-gray-600'>Phone - <Text className='font-dm-regular text-base tracking-tighter leading-none'>{data?.phone}</Text>
                         {"  "}
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => handleClick("Phone")}>
             <SimpleLineIcons name="pencil" size={12} color="#8671FF" />
             </TouchableOpacity>
             </Text>
             <Text className='font-dm-semibold my-1 text-lg text-gray-600'>Email - <Text className='font-dm-regular text-base tracking-tighter leading-none'>{data?.email}</Text>
                         {"  "}
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => handleClick("Email")}>
             <SimpleLineIcons name="pencil" size={12} color="#8671FF" />
             </TouchableOpacity>
             </Text>
         <View className='flex flex-row'>
 
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => setPass(!pass)}>
             <Text className='font-dm-semibold my-4 text-sm text-pup-100'>Change Password</Text>
         </TouchableOpacity>
             <Text className='font-dm-semibold my-4 text-sm text-black'> | </Text>
@@ -90,5 +114,110 @@ const EmployeeProfile = ({data}: {data: Employee}) => {
     </View>
   )
 }
+
+
+const ChangePass = ({close}: {
+  close: any
+}) => {
+  const [loading, setLoading] = useState(false)
+  const [stage, setStage] = useState(0)
+  const [input, setInput] = useState("")
+
+  const {user} = useAuth() as any;
+
+  const clickAction = async () => {
+    try {
+      setLoading(true)
+      const res = await axios.post(
+        `${API_URL}/api/users/change-password`,
+        {
+          password: input
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `${user}`,
+          },
+        }
+      );
+      if (res.status === 200) {
+        close()
+        return true
+      }
+    }
+    catch (error) {
+      console.log(error)
+    }
+    finally {
+      setLoading(false)
+    }
+  }
+  const verifyPass = async () => {
+    try {
+      setLoading(true)
+      const res = await axios.get(
+        `${API_URL}/api/users/verify/${input}`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `${user}`,
+          },
+        }
+      );
+      if (res.status === 200) {
+        setInput("")
+        setStage(1)
+        return true
+      }
+    }
+    catch (error) {
+      console.log(error)
+      return false
+    }
+    finally {
+      setLoading(false)
+    }
+  }
+  
+  return (
+    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: "#00000080", position: 'absolute', zIndex: 999999}} className='h-screen w-screen'>
+      <TouchableOpacity onPress={() => close()}  className='absolute right-8 top-10'>
+      <AntDesign name="closecircleo" size={24} color="white" />
+      </TouchableOpacity>
+      <View className='w-3/4 h-auto bg-white rounded-2xl px-4 py-4 mb-28'>
+        <Text className='font-grotesk-semibold text-xl'>Change <Text className='text-pup-200 text-2xl'>Password</Text></Text>
+
+        {/* <Text className='font-grotesk-light text-base mt-1 text-gray-400 mb-2'>Enter your current password</Text> */}
+
+
+
+    <TextInput
+    value={input}
+    onChangeText={setInput}
+    placeholder={stage === 0 ? `Enter Your Current Password` : `Your New Password`}
+    className='w-full py-4 my-2 rounded-lg px-2 bg-gray-100 placeholder:text-sm placeholder:text-gray-400'
+    />
+    
+    <TouchableOpacity onPress={stage === 0 ? () => verifyPass() : () => clickAction()} disabled={loading} className={`bg-pup-200/20 text-white px-2 py-2.5 mt-2 ${loading ? 'w-24' : 'w-20'} rounded-xl`}>
+        <Text className='text-pup-200 font-dm-medium text-center'>{loading ? "..." : stage===0 ? "Next" : "Update"}</Text>
+    </TouchableOpacity>
+      </View>
+    </View>
+  )
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 export default EmployeeProfile

@@ -2,6 +2,7 @@ import * as userModel from '../model/user.model.js'
 import { Request, Response } from 'express';
 import bcrypt from "bcryptjs";
 import jwt from 'jsonwebtoken';
+import { verifyToken } from '../utils/jwt.js';
 
 export const getAllUsers = async (req: Request, res: Response) => {
   try {
@@ -43,6 +44,17 @@ export const updateUser = async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Failed to update user', err: error });
   }
 };
+
+export const userUpdateFromApp = async (req: Request, res: Response) => {
+  const token = verifyToken(req)
+  console.log(req.body)
+    try {
+    await userModel.updateUser(token as string, req.body);
+    res.status(200).json({ "message": "success" });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update user', err: error });
+  }
+}
 
 export const deleteUser = async (req: Request, res: Response) => {
     const { id } = req.params;
@@ -90,3 +102,32 @@ export const checkToken = async (req: Request, res: Response) => {
     res.status(403).json({ error: 'Invalid token' });
     }
 }
+
+export const verifyPassword = async (req: Request, res: Response) => {
+  const { password } = req.params;
+  try {
+  const token = verifyToken(req)
+  const user: any = await userModel.getPass(token as string)
+  const isMatch = await bcrypt.compare(password, user.password)
+  if (isMatch) {
+    res.status(200).json({correct: true})
+  }
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({ error: 'Failed to fetch user', erro: error });
+  }
+};
+
+export const changePassword = async (req: Request, res: Response) => {
+  const { password } = req.body;
+  try {
+  const token = verifyToken(req)
+  const user: any = userModel.updatePassword(token as string, password)
+  if (user) {
+    res.status(200).json({success: true})
+  }
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({ error: 'Failed to fetch user', erro: error });
+  }
+};

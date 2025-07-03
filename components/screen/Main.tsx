@@ -13,6 +13,11 @@ export default function Main() {
           <Text className="py-2 font-pop-semibold text-3xl tracking-[-1px] text-white">
             All Chats
           </Text>
+          <Pressable onPress={logout}>
+          <Text className="py-2 font-pop-semibold text-3xl tracking-[-1px] text-white">
+            Logout
+          </Text>
+          </Pressable>
           <ChatBubble />
           <ChatBubble />
         </View>

@@ -23,16 +23,13 @@ export const createUser = async (data: any, type: boolean = false) => {
 export const updateUser = async (id: string, data: any) => {
   const user =  await db.user.findUnique({where: {id}})
   
-  const hashed = await bcrypt.hash(data.password, 10);
-
-
+  // const hashed = data.password && await bcrypt.hash(data.password, 10);
 
   await db.user.update({
     where: { id: id },
     data: {
       name: data.name || user?.name,
       email: data.email || user?.email,
-      password: hashed || user?.password,
       role: data.role || user?.role,
       workingAs: data.workingAs || user?.workingAs || null,
       employeeId: data.employeeId || user?.employeeId || null,
@@ -62,4 +59,24 @@ export const getUserByEmail = async (email: string) => {
           password: true
         }
     });
+}
+
+export const getPass = async (id: string) => {
+  return await db.user.findUnique({
+        where: { id },
+        select: {
+          id: true,
+          password: true
+        }
+    });
+}
+
+export const updatePassword = async (id: string, password: string) => {
+  const hashed = await bcrypt.hash(password, 10); 
+   return await db.user.update({
+    where: { id: id },
+    data: {
+      password: hashed
+    },
+  });
 }

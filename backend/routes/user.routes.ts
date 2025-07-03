@@ -19,11 +19,22 @@ router.put("/update/:id", async (req, res) => {
     await userController.updateUser(req, res)
 })
 
+router.post("/update-via-app", async (req, res) => {
+    await userController.userUpdateFromApp(req, res)
+})
+
 router.delete("/delete/:id", async (req, res) => {
     await userController.deleteUser(req, res)
 })
 
 
+router.get("/verify/:password", async (req, res) => {
+  await userController.verifyPassword(req, res);
+});
+
+router.post("/change-password", async (req, res) => {
+  await userController.changePassword(req, res);
+});
 router.post("/login", async (req, res) => {
     await userController.LoginUser(req, res)
 })

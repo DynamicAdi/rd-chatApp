@@ -119,7 +119,7 @@ const Navbar = () => {
   };
 
   return (
-    <View className="absolute bottom-8 flex w-full items-center justify-center">
+    <View className="absolute bottom-2 flex w-full items-center justify-center">
       <View className="flex w-[90%] flex-row items-start justify-start gap-8 rounded-full bg-pup-dark/90 px-0 py-3">
         <FlatList
           data={options}

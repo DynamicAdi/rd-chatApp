@@ -42,6 +42,7 @@ const page = () => {
         setMsg(msg.data);
       }
     } catch (error) {
+      console.log(error)
     } finally {
       setLoading(false);
     }
