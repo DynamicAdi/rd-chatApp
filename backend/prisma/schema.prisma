@@ -14,42 +14,50 @@ enum Role {
 }
 
 model User {
-  id         String  @id @default(cuid())
-  employeeId String? @unique
-  email      String  @unique
-  name       String
-  password   String
-  role       Role    @default(Client)
-  workingAs  String?
-  department String?
-  phone      String?
-  bio        String?
-  image      String?
-  dob        String?
-
-  Projects      Project[]       @relation("UserProjects")
+  id            String          @id @default(cuid())
+  employeeId    String?         @unique
+  email         String          @unique
+  name          String
+  password      String
+  role          Role            @default(Client)
+  workingAs     String?
+  department    String?
+  phone         String?
+  bio           String?
+  image         String?
+  dob           String?
+  groupId       String?
+  Groups        Group?          @relation("UserGroup", fields: [groupId], references: [id])
   Announcements Announcements[] @relation("Announcements")
+  Message       Message[]       @relation("Message")
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
 }
 
-model Project {
+model Announcements {
+  id        String @id @default(cuid())
+  message   String
+  msgBy     String
+  messageBy User   @relation("Announcements", fields: [msgBy], references: [id])
+}
+
+model Group {
   id          String    @id @default(cuid())
   name        String
   description String?
-  sow         String?
-  status      String    @default("pending")
-  StartDate   DateTime?
-  Deadline    DateTime?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  User        User?     @relation("UserProjects", fields: [userId], references: [id])
+  image       String?
   userId      String?
+  members     User[]    @relation("UserGroup")
+  message     Message[] @relation("Group")
+  createdAt   DateTime  @default(now())
 }
 
-model Announcements {
-  id        String  @id @default(cuid())
+model Message {
+  id        String   @id @default(cuid())
   message   String
-  msgBy     String
-  messageBy User    @relation("Announcements", fields: [msgBy], references: [id])
+  userId    String
+  groupId   String?
+  sender    User     @relation("Message", fields: [userId], references: [id])
+  group     Group?   @relation("Group", fields: [groupId], references: [id])
+  createdAt DateTime @default(now())
 }

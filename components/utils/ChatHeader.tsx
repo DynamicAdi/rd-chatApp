@@ -1,11 +1,12 @@
-import { Image, Text, View } from 'react-native';
+import { Image, Text, TouchableOpacity, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Avatar from 'components/elements/Avatar';
 import { AntDesign } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 
 
-const ChatHeader = ({back = true}: {back?:boolean}) => {
-
+const ChatHeader = ({back = true, title="Announcements", id, image}: {back?:boolean, title?: string, id?:string, image?: string}) => {
+    const router = useRouter()
     return (
     <>
       <LinearGradient
@@ -15,18 +16,20 @@ const ChatHeader = ({back = true}: {back?:boolean}) => {
         className="flex h-20 w-full justify-center"
         style={{ borderBottomRightRadius: 80 }}>
         <View className={`flex h-auto w-full flex-row items-center justify-start gap-10 ${back ? "px-4" : "px-6"} pr-10`}>
-            <View className='flex flex-row justify-center items-center gap-1'>
+            <View className='flex flex-row justify-center items-center gap-0'>
                 {back && 
                 <AntDesign name="arrowleft" size={24} color="white" />
                 }
             <View className='w-12 h-12 bg-white border border-white rounded-full overflow-hidden'>
+              <TouchableOpacity onPress={title !== "Announcements" ? () => {router.push(`/chats/details/${id}`)} : () => {}}>
                 <Image
-                source={{uri: "https://picsum.photos/1080/1080"}}
+                source={{uri: image ? image : "https://picsum.photos/1080/1080"}}
                 className='w-full h-full object-cover'
                 />
+                </TouchableOpacity>
             </View>
                 </View>
-            <Text className='font-grotesk-medium text-white text-2xl'>Announcements</Text>
+            <Text className='font-grotesk-medium text-white text-2xl text-center w-3/5'>{title}</Text>
         </View>
       </LinearGradient>
       <LinearGradient

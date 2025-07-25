@@ -3,8 +3,8 @@ import React from 'react'
 
 const GrpList = () => {
   return (
-        <TouchableOpacity className="my-2 flex h-20 w-full flex-row items-center gap-3 border px-2 py-2">
-          <View className="relative h-16 w-16 rounded-full border border-white">
+        <TouchableOpacity className="my-2 flex h-20 w-full flex-row items-center gap-3 border px-2 py-2 bg-pup-100/10 rounded-full">
+          <View className="relative h-16 w-16 rounded-full border border-white/60">
             <Image 
             source={{uri: "https://picsum.photos/800/800"}}
             className='w-full h-full object-cover rounded-full'

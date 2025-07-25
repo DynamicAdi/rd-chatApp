@@ -1,25 +1,109 @@
+import { AntDesign } from '@expo/vector-icons';
+import axios from 'axios';
 import ChatBubble from 'components/elements/ChatBubble';
 import GradBox from 'components/elements/GradBox';
-import { useAuth } from 'context/AuthContext';
-import { Pressable, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import Selector from 'components/elements/Selector';
+import CreateChat from 'components/utils/CreateChat';
+import Input from 'components/utils/Input';
+import { API_URL } from 'context/env';
+import { useEffect, useState } from 'react';
+import { ActivityIndicator, FlatList, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 export default function Main() {
-  const {logout} = useAuth() as any;
+    const [active, setActive] = useState(false)
+    const [New, setNew] = useState(false)
+    const [UserInput, setInput] = useState("")
+    const [desc, setDsc] = useState("")
+    const [Grp, setGrp]: any = useState([])
+    const [loading, setLoading] = useState(true)
+
+    const handleCreateGroup = async () => {
+      const title = UserInput.trim()
+      const description = desc.trim()
+
+      const req = await axios.post(`${API_URL}/api/manage/create-grp`, {
+        data: {
+          name: title,
+          description: description
+        }
+      })
+
+      if (req.status === 200) {
+        console.log("DOne")
+        alert("Created successfully, Please Refresh by changing tabs")
+      }
+    }
+    const getGrp = async () => {
+      setLoading(true)
+      const req = await axios.get(`${API_URL}/api/manage/get-all`)
+      if (req.status === 200) {
+        setGrp(req.data)
+        setLoading(false)
+      }
+    }
+
+    useEffect(() => {
+      getGrp()
+      // console.log("working")
+    }, [])
+    if (loading) {
+      return (
+            <View className="flex-1 justify-center items-center">
+              <ActivityIndicator size="large" color={"white"} />
+              <Text className='text-white text-2xl font-dm-medium'>Getting Your Chats</Text>
+            </View>
+      )
+    }
   return (
-    <View style={{ flex: 1 }}>
-      <ScrollView>
+
+    <View style={{ flex: 1 , position: 'relative'}} >
+      
+      {
+        New && <CreateChat 
+        Action={() => handleCreateGroup()}
+        Dec={desc}
+        setDesc={setDsc}
+        UserInput={UserInput}
+        setInput={setInput}
+        close={() => setNew(false)}
+        />
+      }
+      <Selector setNew={setNew} active={active} setActive={setActive} />
+      
+      <ScrollView style={{minHeight: 100}}>
         <GradBox />
         <View className="px-4">
           <Text className="py-2 font-pop-semibold text-3xl tracking-[-1px] text-white">
             All Chats
           </Text>
-          <Pressable onPress={logout}>
-          <Text className="py-2 font-pop-semibold text-3xl tracking-[-1px] text-white">
-            Logout
-          </Text>
-          </Pressable>
-          <ChatBubble />
-          <ChatBubble />
+          {
+            Grp.length > 0 ? (
+        <FlatList
+          data={Grp}
+          scrollEnabled={false}
+          horizontal
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={{
+            paddingHorizontal: 16,
+            justifyContent: 'space-between',
+            width: '100%',
+          }}
+          renderItem={(items) => (
+            <ChatBubble 
+            key={items.index}
+            id={items.item.id}
+            name={items.item.name}
+            image={items.item.image}
+            message={items.item.message}
+            />
+          )}
+        />
+            ) : (
+              <Text className='text-white font-dm-semibold text-center'>No Chats Found</Text>
+            )
+          }
+          {/*
+          <ChatBubble /> */}
         </View>
       
       {/* <Navbar /> */}

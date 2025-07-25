@@ -3,6 +3,8 @@ import { useRouter, useNavigationContainerRef } from "expo-router";
 import { useEffect, useState } from "react";
 import { View, ActivityIndicator } from "react-native";
 import { useAuth } from "../context/AuthContext";
+import axios from "axios";
+import { API_URL } from "context/env";
 
 export default function Index() {
   const { user, isLoading } = useAuth() as any;

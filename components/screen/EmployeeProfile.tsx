@@ -33,6 +33,10 @@ const EmployeeProfile = ({data, handleSubmit, setInput, input, updating}: {data:
     setInput(userData)
     setPopUp(true)
   }
+    const fist_letter = data.name[0]
+  const last_letter = data.name.split(" ")[1][0]
+  const final_name = fist_letter + last_letter
+
   const close = () => setPopUp(!isPopUp)
   return (
     <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}} className='relative'>
@@ -52,14 +56,21 @@ const EmployeeProfile = ({data, handleSubmit, setInput, input, updating}: {data:
           <View className='w-full h-[70%] bg-white rounded-3xl relative overflow-hidden flex justify-end items-center'>
             {/* UPPER PART */}
             <View className='w-full h-1/2 bg-pup-100 rounded-full rounded-t-none absolute -top-14 flex justify-end items-center'>
-              <View className='w-36 h-36 mb-2 rounded-full border-2 border-white/40 flex justify-center items-center p-1 relative'>
+              <View className='w-36 h-36 mb-2 rounded-full border-2 border-white/40 bg-white flex justify-center items-center  relative'>
               <TouchableOpacity className='w-8 h-8 bg-white absolute rounded-full bottom-2 right-2 z-50 flex justify-center items-center'>
             <SimpleLineIcons name="pencil" size={12} color="#8671FF" />
               </TouchableOpacity>
+                          {
+                            data.image ? (
                 <Image 
                 source={{uri: data?.image ? data.image : `https://picsum.photos/1080/2000`}}
                 className='w-full h-full rounded-full object-cover'
                 />
+                            ) : (
+                              <Text className='text-6xl font-grotesk-medium text-black'>{final_name}</Text>
+                            )
+                          }
+
               </View>
             </View>
             {/* CENTER GAP FOR RIBBON */}
