@@ -14,6 +14,6 @@ RUN npm run build
 
 COPY ./.env /app/dist
 
-EXPOSE 3000
+EXPOSE 8000
 
 CMD [ "node", "dist/main.js" ]

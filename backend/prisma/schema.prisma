@@ -13,6 +13,12 @@ enum Role {
   Client
 }
 
+enum Status {
+  Pending
+  WorkStarted
+  Completed
+}
+
 model User {
   id            String          @id @default(cuid())
   employeeId    String?         @unique
@@ -30,6 +36,8 @@ model User {
   Groups        Group?          @relation("UserGroup", fields: [groupId], references: [id])
   Announcements Announcements[] @relation("Announcements")
   Message       Message[]       @relation("Message")
+  WorkAssigned  Work[]          @relation("Work")
+  Projects      Projects[]      @relation("Projects")
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
 }
@@ -60,4 +68,29 @@ model Message {
   sender    User     @relation("Message", fields: [userId], references: [id])
   group     Group?   @relation("Group", fields: [groupId], references: [id])
   createdAt DateTime @default(now())
+}
+
+model Projects {
+  id               String   @id @default(nanoid())
+  name             String
+  description      String
+  budget           Int
+  startDate        DateTime
+  endDate          DateTime
+  employeeId       String
+  assignedEmployee User[]   @relation("Projects")
+  createdAt        DateTime @default(now())
+}
+
+model Work {
+  id          String   @id @default(cuid())
+  userId      String
+  subject     String
+  projectName String
+  description String
+  status      Status   @default(Pending)
+  deadline    DateTime
+  assignedBy  String
+  assignedTo  User     @relation("Work", fields: [userId], references: [id])
+  createdAt   DateTime @default(now())
 }
