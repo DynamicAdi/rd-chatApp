@@ -5,8 +5,9 @@ import { AntDesign } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 
 
-const ChatHeader = ({back = true, title="Announcements", id, image}: {back?:boolean, title?: string, id?:string, image?: string}) => {
+const ChatHeader = ({back = true, title="Announcements", id, image, type="other"}: {back?:boolean, title?: string, id?:string, image?: string, type?: "main" | "other"}) => {
     const router = useRouter()
+
     return (
     <>
       <LinearGradient
@@ -21,7 +22,7 @@ const ChatHeader = ({back = true, title="Announcements", id, image}: {back?:bool
                 <AntDesign name="arrowleft" size={24} color="white" />
                 }
             <View className='w-12 h-12 bg-white border border-white rounded-full overflow-hidden'>
-              <TouchableOpacity onPress={title !== "Announcements" ? () => {router.push(`/chats/details/${id}`)} : () => {}}>
+              <TouchableOpacity onPress={title !== "Announcements" ? type === "main" ? () => router.push("profile/page") : () => {router.push(`/chats/details/${id}`)} : () => {}}>
                 <Image
                 source={{uri: image ? image : "https://picsum.photos/1080/1080"}}
                 className='w-full h-full object-cover'

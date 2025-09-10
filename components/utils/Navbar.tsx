@@ -47,30 +47,6 @@ const TabOptions = ({
     </TouchableOpacity>
   );
 };
-// const TabOptions = ({
-//   Icon,
-//   title,
-//   IconName,
-//   active,
-//   onPress,
-// }: {
-//   Icon: any;
-//   title: string;
-//   IconName: string;
-//   active: string;
-//   onPress: () => void;
-// }) => {
-//   return (
-//     <TouchableOpacity
-//       onPress={() => onPress()}
-//       className={`flex items-center justify-center gap-0.5 px-6 py-1 ${active === title ? 'bg-pup-100' : ''}`}
-//       style={{ borderRadius: 100 }}>
-//       <Icon color={'white'} size={18} name={`${IconName}`} />
-//       <Text className="font-dm-regular text-sm text-white">{title}</Text>
-//     </TouchableOpacity>
-//   );
-// };
-
 const Navbar = () => {
   const options = [
     {
@@ -79,23 +55,30 @@ const Navbar = () => {
       IconName: 'chatbubbles-outline',
       route: 'main/page',
     },
-    {
+        {
       title: 'Announcements',
       Icon: Ionicons,
-      IconName: 'chatbubbles-outline',
+      IconName: 'megaphone-outline',
       route: 'announcements/page',
     },
+
     {
-      title: 'Profile',
+      title: 'Activity',
       Icon: Ionicons,
-      IconName: 'chatbubbles-outline',
-      route: 'profile/page',
+      IconName: 'analytics-outline',
+      route: 'activity/page',
     },
+    // {
+    //   title: 'Profile',
+    //   Icon: Ionicons,
+    //   IconName: 'id-card-outline',
+    //   route: 'profile/page',
+    // },
   ];
 
   const router = useRouter();
 
-  const [active, setActive] = useState<string>(options[0].title);
+  const [active, setActive] = useState<string>(options[2].title);
 
   const handleClick = (context: { title: string; route: string }) => {
     switch (context.title) {
@@ -108,7 +91,7 @@ const Navbar = () => {
         router.push(context.route);
         break;
 
-      case 'Profile':
+      case 'Activity':
         setActive(context.title);
         router.push(context.route);
         break;
@@ -118,6 +101,9 @@ const Navbar = () => {
     }
   };
 
+  useEffect(() => {
+    router.push('activity/page');
+  }, [])
   return (
     <View className="absolute bottom-3 flex w-full items-center justify-center">
       <View className="flex w-[92%] flex-row items-start justify-start gap-8 rounded-full bg-pup-dark/90 px-0 py-3">
