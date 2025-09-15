@@ -13,6 +13,20 @@ export const getAllUsers = async (req: Request, res: Response) => {
   }
 };
 
+export const getByEmp = async (req: Request, res: Response) => {
+  const { empId } = req.params;
+  try {
+    const user = await userModel.getEmpId(empId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch user' });
+  }
+};
+
+
 export const getUserById = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
@@ -28,10 +42,15 @@ export const getUserById = async (req: Request, res: Response) => {
 
 export const createUser = async (req: Request, res: Response) => {
   try {
-    const user = await userModel.createUser(req.body);
+    
+    // console.log(req.body);
+    const {newEmp} = req.body
+    console.log(newEmp);
+    
+    const user = await userModel.createUser(newEmp);
     res.status(201).json({ "message": "success" });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to create user' });
+    res.status(500).json({ error: 'Failed to create user', e: error });
   }
 };
 

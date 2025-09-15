@@ -9,6 +9,7 @@ generator client {
 
 enum Role {
   Employee
+  TeamLeader
   Admin
   Client
 }
@@ -33,7 +34,9 @@ model User {
   image         String?
   dob           String?
   groupId       String?
+  isLogin       Boolean         @default(false)
   Groups        Group?          @relation("UserGroup", fields: [groupId], references: [id])
+  isTeamLeader  Projects?       @relation("teamLeader")
   Announcements Announcements[] @relation("Announcements")
   Message       Message[]       @relation("Message")
   WorkAssigned  Work[]          @relation("Work")
@@ -77,20 +80,26 @@ model Projects {
   budget           Int
   startDate        DateTime
   endDate          DateTime
-  employeeId       String
+  teamLeader       User    @relation("teamLeader", fields: [teamLeaderId], references: [id])
+  teamLeaderId     String  @unique
+  department       String
+  priority         String
+  status           String   @default("active")
   assignedEmployee User[]   @relation("Projects")
+  WorkAssign       Work[]   @relation("ProjectWork")
   createdAt        DateTime @default(now())
 }
 
 model Work {
-  id          String   @id @default(cuid())
+  id          String     @id @default(cuid())
   userId      String
   subject     String
   projectName String
   description String
-  status      Status   @default(Pending)
+  status      Status     @default(Pending)
   deadline    DateTime
   assignedBy  String
-  assignedTo  User     @relation("Work", fields: [userId], references: [id])
-  createdAt   DateTime @default(now())
+  assignedTo  User       @relation("Work", fields: [userId], references: [id])
+  Project     Projects[] @relation("ProjectWork")
+  createdAt   DateTime   @default(now())
 }

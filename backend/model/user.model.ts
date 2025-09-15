@@ -6,6 +6,9 @@ export const allUsers = async () => db.user.findMany({});
 export const userById = async (id: string) =>
   db.user.findUnique({ where: { id } });
 
+
+export const getEmpId = async (id: string) => db.user.findUnique({where: {employeeId: id}})
+
 export const createUser = async (data: any, type: boolean = false) => {
   const hashed = await bcrypt.hash(data.password, 10);
     await db.user.create({
@@ -13,6 +16,9 @@ export const createUser = async (data: any, type: boolean = false) => {
         name: data.name,
         email: data.email,
         password: hashed,
+        employeeId: data.employeeId,
+        department: data.department,
+        workingAs: data.workingAs,
         role: type ? "Employee" : "Client",
         },
     });
@@ -34,6 +40,7 @@ export const updateUser = async (id: string, data: any) => {
       workingAs: data.workingAs || user?.workingAs || null,
       employeeId: data.employeeId || user?.employeeId || null,
       department: data.department || user?.department || null,
+      isLogin: data.isLogin,
       bio: data.bio || user?.bio || null,
       dob: data.dob || user?.dob || null,
       phone: data.phone || user?.phone || null,

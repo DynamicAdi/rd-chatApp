@@ -26,6 +26,8 @@ const page = () => {
           Authorization: user,
         },
       });
+      console.log(req);
+      
       if (req.status === 200) {
         setData(req.data);
         setRole(req.data.role);

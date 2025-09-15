@@ -6,7 +6,12 @@ const router = Router();
 
 router.get("/", async (req, res) => {
   await userController.getAllUsers(req, res);
-});;
+});
+
+router.get("/get-emp/:empId", async (req, res) => {
+  await userController.getByEmp(req, res);
+});
+
 router.get("/get-by/:id", async (req, res) => {
   await userController.getUserById(req, res);
 });

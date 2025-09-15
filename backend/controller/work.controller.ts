@@ -12,6 +12,16 @@ export const getAllWork = async (req: Request, res: Response) => {
 };
 
 // Get work for a specific user
+// export const getEmp = async (req: Request, res: Response) => {
+//     const { userId } = req.params;
+//     try {
+//         const data = await WorkModel.getSpecific(userId);
+//         res.json(data);
+//     } catch (err) {
+//         res.status(500).json({ error: "Failed to fetch user work" });
+//     }
+// };
+
 export const getSpecific = async (req: Request, res: Response) => {
     const { userId } = req.params;
     try {

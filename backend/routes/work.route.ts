@@ -6,6 +6,11 @@ const router = express.Router();
 router.get('/all', async (req, res) => {
   await workCont.getAllWork(req, res);
 });
+
+// router.get("/get-employee/:empId", async (req, res) => {
+  // await workCont. 
+// })
+
 router.get('/my-work/:userId', async (req, res) => {
   await workCont.getSpecific(req, res);
 });

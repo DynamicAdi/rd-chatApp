@@ -17,10 +17,11 @@ const ProfileAvatar = ({
   subType?: string;
   role?: string;
 }) => {
-  const fist_letter = name[0];
+
+  const fist_letter = name;
   const last_letter = name?.split(' ')[1][0];
   const final_name = fist_letter + last_letter;
-
+    // const final_name = "A" + "B"
   const router = useRouter();
 
   return (

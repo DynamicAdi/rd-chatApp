@@ -8,4 +8,5 @@ router.get("/user", async (req, res) => {
     await profileController.getUserById(req, res)
 })
 
+
 export default router
