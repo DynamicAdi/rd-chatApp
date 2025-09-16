@@ -35,10 +35,12 @@ export const getSpecific = async (req: Request, res: Response) => {
 // Create new work
 export const createWork = async (req: Request, res: Response) => {
     try {
+        console.log(req.body);
         const data = await WorkModel.createWork(req.body);
         res.status(201).json(data);
-    } catch (err) {
-        res.status(500).json({ error: "Failed to create work" });
+    } 
+    catch (err) {
+        res.status(500).json({ error: "Failed to create work", e: err });
     }
 };
 

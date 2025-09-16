@@ -11,6 +11,7 @@ interface Projects {
     department: string
     priority: string
     assignedEmployee: string[]
+    progress: number
 }
     
 
@@ -30,6 +31,7 @@ export const getSpeciProject = async (id: string) => {
         include: {
             teamLeader: true,
             assignedEmployee: true,
+            WorkAssign: true
         }
     })
 }
@@ -71,6 +73,13 @@ export const updateProject = async (data: Projects, id: string) => {
         }
     })}
 
+export const updateStatusModel = async (data: Projects, id: string) => {
+    return await db.projects.update({
+        where: {id},
+        data: {
+            progress: data.progress
+        }
+    })}
 
 export const deleteSpecific = async (id: string) => {
     return await db.projects.delete({where: {id}})

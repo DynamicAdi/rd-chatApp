@@ -5,6 +5,7 @@ import {
   createProjectController,
   updateProjectController,
   deleteProjectController,
+  updateProjectStatus,
 } from "../controller/project.controller.js"
 
 const router = Router()
@@ -21,11 +22,15 @@ router.post("/create", async (req: Request, res: Response) => {
   await createProjectController(req, res)
 })
 
-router.put("update/:id", async (req: Request, res: Response) => {
+router.put("/update/:id", async (req: Request, res: Response) => {
   await updateProjectController(req, res)
 })
 
-router.delete("delete/:id", async (req: Request, res: Response) => {
+router.put("/update-progress/:id", async (req: Request, res: Response) => {
+  await updateProjectStatus(req, res)
+})
+
+router.delete("/delete/:id", async (req: Request, res: Response) => {
   await deleteProjectController(req, res)
 })
 

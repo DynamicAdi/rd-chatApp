@@ -16,8 +16,16 @@ enum Role {
 
 enum Status {
   Pending
-  WorkStarted
   Completed
+}
+
+enum ProjectStatus {
+  active 
+  onTrack
+  atRisk
+  delayed
+  onHold
+  cancelled
 }
 
 model User {
@@ -26,7 +34,7 @@ model User {
   email         String          @unique
   name          String
   password      String
-  role          Role            @default(Client)
+  role          Role            @default(Employee)
   workingAs     String?
   department    String?
   phone         String?
@@ -84,6 +92,7 @@ model Projects {
   teamLeaderId     String  @unique
   department       String
   priority         String
+  progress         Int      @default(0)
   status           String   @default("active")
   assignedEmployee User[]   @relation("Projects")
   WorkAssign       Work[]   @relation("ProjectWork")

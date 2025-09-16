@@ -6,6 +6,7 @@ import {
   createProject,
   updateProject,
   deleteSpecific,
+  updateStatusModel,
 } from "../model/projects.model.js"
 
 // Get all projects
@@ -49,6 +50,20 @@ export const updateProjectController = async (req: Request, res: Response) => {
   try {
     const { id } = req.params
     const project = await updateProject(req.body, id)
+    res.status(200).json({ success: true, data: project })
+  } catch (error: any) {
+    if (error.code === "P2025") {
+      // Prisma record not found
+      return res.status(404).json({ success: false, message: "Project not found" })
+    }
+    res.status(500).json({ success: false, message: error.message })
+  }
+}
+
+export const updateProjectStatus = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params
+    const project = await updateStatusModel(req.body, id)
     res.status(200).json({ success: true, data: project })
   } catch (error: any) {
     if (error.code === "P2025") {

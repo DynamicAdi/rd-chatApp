@@ -10,6 +10,7 @@ interface TaskObj {
   deadline: string;
   assignedBy: string;
   assignedTo: any;
+  projectId: string
 }
 
 export const getAllWork = async () => {
@@ -27,7 +28,7 @@ export const getSpecific = async (userId: string) => {
 }
 
 export const createWork = async (props: TaskObj) => {
-      const { subject, assignedBy, deadline, description, projectName, assignedTo } = props;
+      const { subject, assignedBy, deadline, description, projectName, assignedTo, projectId } = props;
     const createData = await db.work.create({
         data: {
             projectName,
@@ -35,8 +36,18 @@ export const createWork = async (props: TaskObj) => {
             deadline,
             description,
             subject,
-            assignedTo
-        }
+            assignedTo: {
+                connect: {
+                    id: assignedTo
+                }
+            },
+            Project: {
+                connect: {
+                    id: projectId
+                }
+            }
+        },
+        
     })
     return createData
 }
