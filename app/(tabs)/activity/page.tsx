@@ -15,6 +15,7 @@ import { API_URL } from 'context/env';
 import { useAuth } from 'context/AuthContext';
 
 interface TaskObj {
+  id?: string;
   subject: string;
   description: string;
   status: string;
@@ -27,12 +28,26 @@ function ToggleCard({
   Props,
   isTaskExpand,
   setIsTaskExpand,
+  updateFunc,
 }: {
   Props: TaskObj;
   isTaskExpand: string | null;
   setIsTaskExpand: React.Dispatch<React.SetStateAction<string | null>>;
+  updateFunc: (id: string) => void;
 }) {
-  const { subject, status, assignedBy, deadline, description, projectName } = Props;
+  const { id, subject, status, assignedBy, deadline, description, projectName } = Props;
+
+  const alert = (title: string, id: string) => {
+    Alert.alert(`${title}`, 'Are you sure to mark it as Done?', [
+      { text: 'No', onPress: () => {} },
+      {
+        text: 'Yes',
+        onPress: async () => {
+          await updateFunc(id);
+        },
+      },
+    ]);
+  };
 
   return (
     <TouchableOpacity
@@ -58,6 +73,7 @@ function ToggleCard({
         </View>
         {isTaskExpand === subject && (
           <TouchableOpacity
+            onPress={() => alert(projectName, id as string)}
             activeOpacity={status === 'completed' ? 1 : 0.4}
             className={`absolute -bottom-10 right-0  flex flex-row gap-1 rounded-lg bg-emerald-600/25 px-3 py-2 ${status.toLowerCase() === 'completed' ? 'opacity-50' : 'opacity-100'}`}>
             <Text className="font-dm-medium text-xs text-emerald-500">
@@ -78,7 +94,9 @@ function ToggleCard({
         <View className="flex h-full w-1/3 items-center justify-center">
           <AntDesign name="clockcircleo" size={24} color="white" />
           <Text className="mt-4 text-center font-dm-light text-xs text-gray-500">Deadline</Text>
-          <Text className="mt-1 text-center font-dm-regular text-sm text-white">{deadline}</Text>
+          <Text className="mt-1 text-center font-dm-regular text-sm text-white">
+            {new Date(deadline).toDateString()}
+          </Text>
         </View>
 
         <View className="flex h-full w-1/3 items-center justify-center">
@@ -96,8 +114,16 @@ const page = () => {
   const [isCompletedTab, setIsCompletedTab] = useState(false);
   const [isTaskExpand, setIsTaskExpand] = useState<string | null>(null);
   const [isLoading, setLoading] = useState(true);
-  const [data, setData] = useState([])
-
+  const [data, setData] = useState([]);
+  const [Tasks, setTasks] = useState<{
+    total: TaskObj[];
+    pending: TaskObj[];
+    completed: TaskObj[];
+  }>({
+    total: [],
+    pending: [],
+    completed: [],
+  });
   const { user } = useAuth() as any;
 
   const handleLogin = async () => {
@@ -114,7 +140,6 @@ const page = () => {
         },
       }
     );
-    console.log(req);
 
     if (req) {
       setLoading(false);
@@ -122,6 +147,34 @@ const page = () => {
     }
     setLoading(false);
     return false;
+  };
+
+  const updateStatusForWork = async (id: string) => {
+    try {
+      const req = await axios.put(`${API_URL}/api/work/update-work-status/${id}`, {
+        status: 'Completed',
+      });
+
+      if (req.status === 200) {
+        setTasks((prev) => {
+          const task =
+            prev.total.find((task) => task.id === id) ||
+            prev.pending.find((task) => task.id === id);
+
+          if (!task) return prev; // If task not found, skip
+
+          const updatedTask = { ...task, status: 'Completed' };
+
+          return {
+            ...prev,
+            pending: prev.pending.filter((task) => task.id !== id),
+            completed: [...prev.completed, updatedTask],
+          };
+        });
+      }
+    } catch (error) {
+      console.error('Failed to update status', error);
+    }
   };
 
   const alert = () => {
@@ -139,69 +192,6 @@ const page = () => {
     ]);
   };
 
-  const tasks: TaskObj[] = [
-    {
-      subject: 'Design Ready',
-      description: 'Create wireframes and mockups for the homepage',
-      status: 'Completed',
-      projectName: 'Website Redesign',
-      deadline: '2025-09-15',
-      assignedBy: 'Alice Johnson',
-    },
-    {
-      subject: 'API Integration',
-      description: 'Integrate payment gateway API with backend',
-      status: 'Completed',
-      projectName: 'E-commerce Platform',
-      deadline: '2025-09-20',
-      assignedBy: 'Michael Smith',
-    },
-    {
-      subject: 'Bug Fixes',
-      description: 'Fix login authentication issues on mobile devices',
-      status: 'Pending',
-      projectName: 'Mobile App v2',
-      deadline: '2025-09-05',
-      assignedBy: 'David Brown',
-    },
-    {
-      subject: 'Database Optimization',
-      description: 'Improve query performance and add missing indexes',
-      status: 'Pending',
-      projectName: 'Analytics Dashboard',
-      deadline: '2025-09-18',
-      assignedBy: 'Sophia Martinez',
-    },
-    {
-      subject: 'Content Writing',
-      description: 'Write blog post on AI trends in 2025',
-      status: 'Pending',
-      projectName: 'Marketing Campaign',
-      deadline: '2025-09-12',
-      assignedBy: 'Emma Wilson',
-    },
-  ];
-
-  const [Tasks, setTasks] = useState<{
-    total: TaskObj[];
-    pending: TaskObj[];
-    completed: TaskObj[];
-  }>({
-    total: [],
-    pending: [],
-    completed: [],
-  });
-
-  useEffect(() => {
-    const completed = tasks.filter((task) => task.status.toLowerCase() === 'completed');
-    const pending = tasks.filter((task) => task.status.toLowerCase() !== 'completed');
-    setTasks({
-      completed: completed,
-      pending: pending,
-      total: tasks,
-    });
-  }, []);
-
   const getProfile = async () => {
     try {
       setLoading(true);
@@ -211,9 +201,33 @@ const page = () => {
         },
       });
       console.log(req);
-      
+
       if (req.status === 200) {
-        setIsLogin(req.data.isLogin)
+        console.log(req.data);
+        setIsLogin(req.data.isLogin);
+
+        const filtered = req.data.WorkAssigned.filter((item: any) => {
+  const createdAt = new Date(item.createdAt);
+  const now = new Date();
+
+  const diffInHours = (now.getTime() - createdAt.getTime()) / (1000 * 60 * 60);
+
+  return !(item.status === "Completed" && diffInHours > 24);
+});
+
+
+        const completed = filtered.filter(
+          (task: any) => task.status.toLowerCase() === 'completed'
+        );
+        const pending = filtered.filter(
+          (task: any) => task.status.toLowerCase() !== 'completed'
+        );
+        setTasks((prev) => ({
+          ...prev,
+          total: filtered,
+          completed: completed,
+          pending: pending,
+        }));
         setData(req.data);
       }
     } catch (error) {
@@ -222,17 +236,38 @@ const page = () => {
     }
   };
   useEffect(() => {
-    getProfile()
-  }, [isLogin])
+    getProfile();
+  }, [isLogin]);
 
+  useEffect(() => {
+    if (isLogin) {
+    }
+  }, [isLogin]);
 
   if (isLoading) {
     return (
-      <View className='w-auto h-screen flex justify-center items-center'>
-        <ActivityIndicator size={32} color={"white"} />
+      <View className="flex h-screen w-auto items-center justify-center">
+        <ActivityIndicator size={32} color={'white'} />
       </View>
-    )
+    );
   }
+
+  const listData = isCompletedTab ? Tasks.completed : Tasks.pending;
+const EmptyComponent = isCompletedTab 
+  ? (            <Text className="mt-40 text-center font-grotesk-light text-lg text-gray-400">
+              You have not compeleted Anything yet!{' '}
+              <Text className="text-center font-grotesk-light text-sm text-gray-600">
+                {' '}
+                {'\n'}Please completed your task on specified deadlines. {'\n'}{' '}
+              </Text>
+            </Text>)
+  : (            <Text className="mt-40 text-center font-grotesk-light text-xl text-gray-400">
+              No Task has been assigned yet!{' '}
+              <Text className="text-center font-grotesk-light text-base text-gray-600">
+                {' '}
+                {'\n'}Please wait a while or contact Team Leader or management {'\n'}{' '}
+              </Text>
+            </Text>);
   return (
     <View>
       <ChatHeader title="Today's Activity" back={false} type="main" />
@@ -294,28 +329,25 @@ const page = () => {
               )}
             </Text>
           </TouchableOpacity>
-          {tasks.length > 0 ? (
+          {
+          
+          listData.length > 0 ? (
             <FlatList
-              data={isCompletedTab ? Tasks.completed : Tasks.pending}
-              keyExtractor={(item, index) => index.toString()}
+              data={listData}
+              keyExtractor={(index) => index.toString()}
               renderItem={({ item }) => (
                 <ToggleCard
                   Props={item}
                   isTaskExpand={isTaskExpand}
                   setIsTaskExpand={setIsTaskExpand}
+                  updateFunc={updateStatusForWork}
                 />
               )}
               showsVerticalScrollIndicator={false}
               className="h-96"
             />
           ) : (
-            <Text className="mt-40 text-center font-grotesk-light text-xl text-gray-400">
-              No Task has been assigned yet!{' '}
-              <Text className="text-center font-grotesk-light text-base text-gray-600">
-                {' '}
-                {'\n'}Please wait a while or contact Team Leader or management {'\n'}{' '}
-              </Text>
-            </Text>
+            EmptyComponent
           )}
         </View>
       ) : (

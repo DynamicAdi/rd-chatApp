@@ -4,7 +4,9 @@ import bcrypt from "bcryptjs";
 export const allUsers = async () => db.user.findMany({});
 
 export const userById = async (id: string) =>
-  db.user.findUnique({ where: { id } });
+  db.user.findUnique({ where: { id }, include: {
+    WorkAssigned: true
+  } });
 
 
 export const getEmpId = async (id: string) => db.user.findUnique({where: {employeeId: id}})

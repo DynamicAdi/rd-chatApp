@@ -52,7 +52,7 @@ export const updateStatus = async (req: Request, res: Response) => {
         const data = await WorkModel.updateStatus(id, status);
         res.json(data);
     } catch (err) {
-        res.status(500).json({ error: "Failed to update status" });
+        res.status(500).json({ error: "Failed to update status", err });
     }
 };
 

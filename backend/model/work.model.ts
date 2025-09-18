@@ -1,6 +1,6 @@
 import db from "../client/connect.js";
 
-type Status = "Pending" | "WorkStarted" | "Completed"
+type Status = "Pending" | "Completed"
 
 interface TaskObj {
   subject: string;
