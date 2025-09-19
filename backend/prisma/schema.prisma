@@ -20,7 +20,7 @@ enum Status {
 }
 
 enum ProjectStatus {
-  active 
+  active
   onTrack
   atRisk
   delayed
@@ -81,6 +81,16 @@ model Message {
   createdAt DateTime @default(now())
 }
 
+model Docs {
+  id         String     @id @default(cuid())
+  title      String
+  fileUrl    String
+  createdAt  DateTime   @default(now())
+  projectId  String
+  Project    Projects?  @relation("Project", fields: [projectId], references: [id])
+}
+
+
 model Projects {
   id               String   @id @default(nanoid())
   name             String
@@ -88,10 +98,11 @@ model Projects {
   budget           Int
   startDate        DateTime
   endDate          DateTime
-  teamLeader       User    @relation("teamLeader", fields: [teamLeaderId], references: [id])
-  teamLeaderId     String  @unique
+  teamLeader       User     @relation("teamLeader", fields: [teamLeaderId], references: [id])
+  teamLeaderId     String   @unique
   department       String
   priority         String
+  Document         Docs[]   @relation("Project")
   progress         Int      @default(0)
   status           String   @default("active")
   assignedEmployee User[]   @relation("Projects")

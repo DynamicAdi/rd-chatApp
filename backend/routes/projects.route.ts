@@ -6,6 +6,9 @@ import {
   updateProjectController,
   deleteProjectController,
   updateProjectStatus,
+  createDocController,
+  getDocsController,
+  deleteDocController,
 } from "../controller/project.controller.js"
 
 const router = Router()
@@ -29,6 +32,20 @@ router.put("/update/:id", async (req: Request, res: Response) => {
 router.put("/update-progress/:id", async (req: Request, res: Response) => {
   await updateProjectStatus(req, res)
 })
+
+
+router.post("/docs-upload", async (req: Request, res: Response) => {await createDocController(req, res)});
+
+// Get all docs for a project
+router.get("/docs/:projectId", async (req: Request, res: Response) => {
+  await getDocsController(req, res)
+});
+
+// Delete doc by id
+router.delete("/docs/delete/:id", async (req: Request, res: Response) => {
+  await deleteDocController(req, res)
+});
+
 
 router.delete("/delete/:id", async (req: Request, res: Response) => {
   await deleteProjectController(req, res)

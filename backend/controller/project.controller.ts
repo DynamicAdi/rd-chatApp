@@ -7,6 +7,9 @@ import {
   updateProject,
   deleteSpecific,
   updateStatusModel,
+  uploadDocs,
+  getDocs,
+  deleteDoc,
 } from "../model/projects.model.js"
 
 // Get all projects
@@ -87,3 +90,53 @@ export const deleteProjectController = async (req: Request, res: Response) => {
     res.status(500).json({ success: false, message: error.message })
   }
 }
+
+export const createDocController = async (req: Request, res: Response) => {
+  try {
+    const { title, projectId, fileUrl } = req.body;
+    
+    if (!title || !fileUrl || !projectId) {
+      return res.status(400).json({ error: "title, fileUrl and projectId are required" });
+    }
+
+    const doc = await uploadDocs(title, fileUrl, projectId);
+    res.status(201).json(doc);
+  } catch (err: any) {
+    console.error("Error creating doc:", err);
+    res.status(500).json({ error: err.message || "Internal Server Error" });
+  }
+};
+
+// Get all documents for a project
+export const getDocsController = async (req: Request, res: Response) => {
+  try {
+    const { projectId } = req.params;
+
+    if (!projectId) {
+      return res.status(400).json({ error: "projectId is required" });
+    }
+
+    const docs = await getDocs(projectId);
+    res.json(docs);
+  } catch (err: any) {
+    console.error("Error fetching docs:", err);
+    res.status(500).json({ error: err.message || "Internal Server Error" });
+  }
+};
+
+// Delete a document by id
+export const deleteDocController = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      return res.status(400).json({ error: "id is required" });
+    }
+
+    const deleted = await deleteDoc(id);
+    res.json({ message: "Document deleted successfully", deleted });
+  } catch (err: any) {
+    console.error("Error deleting doc:", err);
+    res.status(500).json({ error: err.message || "Internal Server Error" });
+  }
+};

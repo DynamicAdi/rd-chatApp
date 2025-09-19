@@ -31,7 +31,12 @@ export const getSpeciProject = async (id: string) => {
         include: {
             teamLeader: true,
             assignedEmployee: true,
-            WorkAssign: true
+            WorkAssign: {
+                include: {
+                    assignedTo: true
+                }
+            },
+            Document: true
         }
     })
 }
@@ -83,4 +88,26 @@ export const updateStatusModel = async (data: Projects, id: string) => {
 
 export const deleteSpecific = async (id: string) => {
     return await db.projects.delete({where: {id}})
+}
+
+export const uploadDocs = async (title: string, fileUrl: string, projectId: string) => {
+    return await db.docs.create({
+        data: {
+            title,
+            fileUrl,
+            Project: {
+                connect: {id: projectId}
+            }
+        }
+    })
+}
+
+export const getDocs = async (projectId: string) => {
+    return await db.docs.findMany({
+        where: {projectId}
+    })
+}
+
+export const deleteDoc = async (id: string) => {
+    return await db.docs.delete({where: {id}})
 }

@@ -8,7 +8,7 @@ import announcementsRoute from "./routes/annoucements.routes.js";
 import groupRoute from "./routes/group.route.js";
 import workRoute from "./routes/work.route.js";
 import projectRoute from "./routes/projects.route.js"
-
+import cloudRoute from "./routes/cloud.routes.js"
 dotenv.config();
 
 const app = express();
@@ -28,6 +28,7 @@ app.use("/api/announcements", announcementsRoute);
 app.use("/api/manage", groupRoute);
 app.use("/api/work", workRoute);
 app.use("/api/project", projectRoute)
+app.use("/api/cloud", cloudRoute)
 
 app.listen(PORT, () => {
   console.log(`✅ Server is running on http://localhost:${PORT}`);
