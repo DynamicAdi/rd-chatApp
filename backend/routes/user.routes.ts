@@ -16,12 +16,32 @@ router.get("/get-by/:id", async (req, res) => {
   await userController.getUserById(req, res);
 });
 
+router.get("/check-approval/:id", async (req, res) => {
+  await userController.checkIsApproved(req, res);
+});
+
+router.get("/get-docs/:id", async (req, res) => {
+  await userController.getDocs(req, res);
+});
+
+router.post("/upload-docs", async (req, res) => {
+    await userController.createDocController(req, res)
+})
+
+router.delete("/delete-doc/:id", async (req, res) => {
+    await userController.deleteDocController(req, res)
+})
+
 router.post("/create", async (req, res) => {
     await userController.createUser(req, res)
 })
 
 router.put("/update/:id", async (req, res) => {
     await userController.updateUser(req, res)
+})
+
+router.put("/update-approval/:id", async (req, res) => {
+    await userController.updateApproved(req, res)
 })
 
 router.post("/update-via-app", async (req, res) => {

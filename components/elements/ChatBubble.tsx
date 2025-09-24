@@ -8,8 +8,8 @@ const ChatBubble = ({id, image, name, message}: {
   name: string
   message: any[]
 }) => {
-  const fist_letter = name[0]
-  const last_letter = name.split(" ")[1][0]
+  const fist_letter = "A"
+  const last_letter = "B"
   const final_name = fist_letter + last_letter
 
   const router = useRouter()

@@ -35,6 +35,8 @@ model User {
   name          String
   password      String
   role          Role            @default(Employee)
+  isApproved    Boolean?
+  Documents     Docs[]          @relation("UserDocuments")
   workingAs     String?
   department    String?
   phone         String?
@@ -82,14 +84,15 @@ model Message {
 }
 
 model Docs {
-  id         String     @id @default(cuid())
-  title      String
-  fileUrl    String
-  createdAt  DateTime   @default(now())
-  projectId  String
-  Project    Projects?  @relation("Project", fields: [projectId], references: [id])
+  id        String    @id @default(cuid())
+  title     String
+  fileUrl   String
+  createdAt DateTime  @default(now())
+  projectId String?
+  userId    String?
+  User      User?     @relation("UserDocuments", fields: [userId], references: [id])
+  Project   Projects? @relation("Project", fields: [projectId], references: [id])
 }
-
 
 model Projects {
   id               String   @id @default(nanoid())

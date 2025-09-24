@@ -31,6 +31,8 @@ export const getGroupByGrpId = async (req: Request, res: Response) => {
 
 export const createGroupController = async (req: Request, res: Response) => {
   try {
+    
+    console.log(req.body);
     const newGroup = await createGroup(req.body);
     return res.status(201).json(newGroup);
   } catch (error) {

@@ -1,13 +1,28 @@
 import db from "../client/connect.js";
 import bcrypt from "bcryptjs";
 
-export const allUsers = async () => db.user.findMany({});
+export const allUsers = async () => db.user.findMany({orderBy: {employeeId: 'asc'}});
 
 export const userById = async (id: string) =>
   db.user.findUnique({ where: { id }, include: {
-    WorkAssigned: true
+    WorkAssigned: true,
   } });
 
+  export const userApproved = async (id: string) =>
+  db.user.update({ where: { id }, data: { isApproved: true }});
+
+  export const checkIsApproved = async (id: string) =>
+  db.user.findUnique({ where: { id }, select: {
+    isApproved: true,
+    id: true
+  }});
+
+    export const getDocs = async (id: string) =>
+  db.user.findUnique({ where: { id }, select: {
+    isApproved: true,
+    Documents: true,
+    id: true
+  }});
 
 export const getEmpId = async (id: string) => db.user.findUnique({where: {employeeId: id}})
 
@@ -80,6 +95,7 @@ export const getPass = async (id: string) => {
     });
 }
 
+
 export const updatePassword = async (id: string, password: string) => {
   const hashed = await bcrypt.hash(password, 10); 
    return await db.user.update({
@@ -88,4 +104,21 @@ export const updatePassword = async (id: string, password: string) => {
       password: hashed
     },
   });
+}
+
+export const uploadDocs = async (title: string, fileUrl: string, userId: string) => {
+    return await db.docs.create({
+        data: {
+            title,
+            fileUrl,
+            User: {
+                connect: {id: userId}
+            }
+        }
+    })
+}
+
+
+export const deleteDoc = async (id: string) => {
+    return await db.docs.delete({where: {id}})
 }

@@ -17,13 +17,13 @@ export default function Main() {
     const [active, setActive] = useState(false)
     const [New, setNew] = useState(false)
     const [UserInput, setInput] = useState("")
-    const [desc, setDsc] = useState("")
+    const [desc, setDsc] = useState<string | null>(null)
     const [Grp, setGrp]: any = useState([])
     const [loading, setLoading] = useState(true)
 
     const handleCreateGroup = async () => {
       const title = UserInput.trim()
-      const description = desc.trim()
+      const description = desc?.trim()
 
       const req = await axios.post(`${API_URL}/api/manage/create-grp`, {
         data: {
@@ -32,7 +32,7 @@ export default function Main() {
         }
       })
 
-      if (req.status === 200) {
+      if (req.status === 201) {
         console.log("Done")
         alert("Created successfully, Please Refresh by changing tabs")
       }
@@ -41,6 +41,8 @@ export default function Main() {
       setLoading(true)
       const req = await axios.get(`${API_URL}/api/manage/get-all`)
       if (req.status === 200) {
+        console.log(req.data);
+        
         setGrp(req.data)
         setLoading(false)
       }
@@ -75,7 +77,7 @@ export default function Main() {
       {
         New && <CreateChat 
         Action={() => handleCreateGroup()}
-        Dec={desc}
+        Dec={desc as string}
         setDesc={setDsc}
         UserInput={UserInput}
         setInput={setInput}

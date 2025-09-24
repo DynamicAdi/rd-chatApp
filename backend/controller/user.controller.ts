@@ -40,6 +40,48 @@ export const getUserById = async (req: Request, res: Response) => {
   }
 };
 
+
+export const updateApproved = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  try {
+    const user = await userModel.userApproved(id);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch user' });
+  }
+};
+
+
+export const getDocs = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  try {
+    const user = await userModel.getDocs(id);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch user' });
+  }
+};
+
+export const checkIsApproved = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  try {
+    const user = await userModel.checkIsApproved(id);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch user' });
+  }
+};
+
+
 export const createUser = async (req: Request, res: Response) => {
   try {
     
@@ -148,5 +190,41 @@ export const changePassword = async (req: Request, res: Response) => {
   } catch (error) {
     console.log(error)
     res.status(500).json({ error: 'Failed to fetch user', erro: error });
+  }
+};
+
+
+
+export const createDocController = async (req: Request, res: Response) => {
+  try {
+    const { title, userId, fileUrl } = req.body;
+    
+    if (!title || !fileUrl || !userId) {
+      return res.status(400).json({ error: "title, fileUrl and userId are required" });
+    }
+
+    const doc = await userModel.uploadDocs(title, fileUrl, userId);
+    res.status(201).json(doc);
+  } catch (err: any) {
+    console.error("Error creating doc:", err);
+    res.status(500).json({ error: err.message || "Internal Server Error" });
+  }
+};
+
+
+// Delete a document by id
+export const deleteDocController = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      return res.status(400).json({ error: "id is required" });
+    }
+
+    const deleted = await userModel.deleteDoc(id);
+    res.json({ message: "Document deleted successfully", deleted });
+  } catch (err: any) {
+    console.error("Error deleting doc:", err);
+    res.status(500).json({ error: err.message || "Internal Server Error" });
   }
 };
